@@ -1,5 +1,8 @@
 package bank;
 
+import data.BankAccount;
+import data.BankData;
+
 import java.util.Scanner;
 
 public class ATM {
@@ -17,41 +20,52 @@ public class ATM {
         switch (choice){
             case "1" -> askCardData();
             case "2" -> createPersonalAccount();
+            case "3" -> exitATM();
             default -> showChoiceError();
         }
+        askCardAction();
+    }
+
+    private void exitATM() {
+        System.out.println("Вы вышли из банкомата.");
+    }
+
+    private void askCardAction(){
+        System.out.println("Добро пожаловать, " + Bank.getAccounts().get(0).getClient().getName() + Bank.getAccounts().get(0).getClient().getSurname());
+        System.out.println("Что желаете? \n1-Посмотреть баланс \n2-Пополнить баланс \n3-Изменить пин-код");
+        String choice = getScannerData();
+        switch (choice){
+            case "1" -> ATMBalance();
+            case "2" -> topUpBalance();
+            case "3" -> changePinCode();
+            default -> showChoiceError();
+        }
+        askCardAction();
+    }
+
+    private void changePinCode() {
+        System.out.println("Введите новый пин-код");
+        String newPinCode = getScannerData();
+        Bank.getAccounts().get(0).getClient().getCard().setPinCode(newPinCode);
     }
 
     private void askCardData() {
         System.out.println("Вставьте карту");
         String cardNumber = getScannerData();
         checkPinCode(cardNumber);
-        System.out.println("Добро пожаловать, " + Bank.getAccounts().get(0).getClient().getName() + Bank.getAccounts().get(0).getClient().getSurname());
-        System.out.println("Что желаете? \n1-Посмотреть баланс \n2-Пополнить баланс \n3-Изменить пин-код");
-        String choice = getScannerData();
-        switch (choice){
-            case "1" -> checkBalance();
-            case "2" -> topUpBalance();
-//            case "3" -> changePinCode();
-        }
     }
 
-    private int checkBalance() {
-        int balance = Card.rnd(0, 1_000_000);
-        System.out.println("Ваш баланс: " + balance + "рублей");
-        return balance;
+    private void ATMBalance(){
+        System.out.println("Ваш баланс: " + BankData.getAccounts().get(0).getBalance() + " рублей");
     }
-
     private void topUpBalance() {
-        System.out.println(checkBalance());
+        System.out.println("Ваш баланс " + BankData.getAccounts().get(0).getBalance());
         System.out.println("На сколько желаете пополнить?");
         int money = Integer.parseInt(getScannerData());
-        int newBal = checkBalance() + money;
-        System.out.println("Пополнение успешно! \nВаш баланс: " + newBal + "рублей");
+        int newBal = BankData.getAccounts().get(0).getBalance() + money;
+        System.out.println("Пополнение успешно! \nВаш баланс: " + newBal + " рублей");
     }
 
-//    private void changePinCode() {
-//        String newPin = Card.getPinCode();
-//    }
 
     private void checkPinCode(String cardNumber) {
         for(int i=0; i < Bank.getAccounts().size(); i++){
